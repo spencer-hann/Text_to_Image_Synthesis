@@ -8,6 +8,6 @@ Using NLP feature extraction, and Generative Adversarial Networks to generate im
  * [Oxford-102 Flowers](http://www.robots.ox.ac.uk/~vgg/data/flowers/102/)  
  
 ### Preprocessed w/Text descriptsions  
-
+From primary author's [github](https://github.com/reedscot/cvpr2016):
  * [birds from github.com/reedscot](https://drive.google.com/open?id=0B0ywwgffWnLLZW9uVHNjb2JmNlE)
  * [flowers from github.com/reedscot](https://drive.google.com/open?id=0B0ywwgffWnLLcms2WWJQRFNSWXM)
