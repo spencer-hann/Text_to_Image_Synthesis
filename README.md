@@ -7,12 +7,14 @@ Authors: [Scott Reed](https://github.com/reedscot), Zeynep Akata, Xinchen Yan, L
 
 ## Data sets
 
-### Raw  
+### General Use  
 
+From Caltech and Oxford websites:
  * [Caltech-UCSD Birds 200](http://www.vision.caltech.edu/visipedia/CUB-200.html)  
  * [Oxford-102 Flowers](http://www.robots.ox.ac.uk/~vgg/data/flowers/102/)  
  
-### Preprocessed w/Text descriptsions  
-From primary author's [github](https://github.com/reedscot/cvpr2016):
- * [birds from github.com/reedscot](https://drive.google.com/open?id=0B0ywwgffWnLLZW9uVHNjb2JmNlE)
- * [flowers from github.com/reedscot](https://drive.google.com/open?id=0B0ywwgffWnLLcms2WWJQRFNSWXM)
+### Preprocessed w/Text descriptions  
+
+From primary author's [github repo](https://github.com/reedscot/icml2016):
+ * [birds from github.com/reedscot/icml2016](https://drive.google.com/file/d/0B0ywwgffWnLLLUc2WHYzM0Q2eWc/view)
+ * [flowers from github.com/reedscot/icml2016](https://drive.google.com/file/d/0B0ywwgffWnLLMl9uOU91MV80cVU/view)
