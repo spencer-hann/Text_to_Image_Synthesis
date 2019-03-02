@@ -1,7 +1,12 @@
 # Text to Image Synthesis
+
 Using NLP feature extraction, and Generative Adversarial Networks to generate images from text descriptions.  
-[Paper being replicated](https://arxiv.org/pdf/1605.05396.pdf)  
+
+Partial replication of the paper [Generative Adversarial Text to Image Synthesis](https://arxiv.org/pdf/1605.05396.pdf).  
+Authors: [Scott Reed](https://github.com/reedscot), Zeynep Akata, Xinchen Yan, Lajanugen Logeswaran, Bernt Schiele, Honglak Lee  
+
 ## Data sets
+
 ### Raw  
 
  * [Caltech-UCSD Birds 200](http://www.vision.caltech.edu/visipedia/CUB-200.html)  
