@@ -9,5 +9,5 @@ Using NLP feature extraction, and Generative Adversarial Networks to generate im
  
 ### Preprocessed w/Text descriptsions  
 
- * [birds](https://drive.google.com/open?id=0B0ywwgffWnLLZW9uVHNjb2JmNlE)
- * [flowers](https://drive.google.com/open?id=0B0ywwgffWnLLcms2WWJQRFNSWXM)
+ * [birds from github.com/reedscot](https://drive.google.com/open?id=0B0ywwgffWnLLZW9uVHNjb2JmNlE)
+ * [flowers from github.com/reedscot](https://drive.google.com/open?id=0B0ywwgffWnLLcms2WWJQRFNSWXM)
