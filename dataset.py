@@ -30,7 +30,7 @@ class Birds(Dataset):
 
         print("Loading images...")
 
-        for subdir, dirs, files in os.subdirs(img_dir):
+        for subdir, dirs, files in os.walk(img_dir):
             print(subdir,dirs)
             for file in files:
                 img = Image.open(file)
@@ -42,8 +42,8 @@ class Birds(Dataset):
 
         print("Loading txt descriptions...")
 
-        subdirs = np.asarray([w for _,w,_ in os.subdirs(txt_dir)][0])
-        desc_sets = np.asarray([f for _,_,f in os.subdirs(txt_dir)][1:])
+        subdirs = np.asarray([w for _,w,_ in os.walk(txt_dir)][0])
+        desc_sets = np.asarray([f for _,_,f in os.walk(txt_dir)][1:])
 
         sorted_indices = np.argsort(subdirs,axis=0)
         subdirs = subdirs[sorted_indices]
