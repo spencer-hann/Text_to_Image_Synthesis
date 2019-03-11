@@ -5,27 +5,28 @@ from PIL import Image
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms, utils
 
-Birds_img_dir = "./data/Birds/images"
+Birds_img_dir = "./data/Birds/Caltech-UVSD-Birds-200-2011/CUB_200_2011/images"
 Birds_txt_dir = "./data/Birds/cub_cvpr/text_c10"
 
 class Birds(Dataset):
 
 
     def __init__(self, img_dir=Birds_img_dir, txt_dir=Birds_txt_dir):
+        self.desc_per_img = 10 # number of text descriptions per image
 
         self._load_descriptions(txt_dir)
         #self._load_images(img_dir)
 
-        self.N = len(self.images) * 10 # 10 examples/descriptions per image
+        #self.N = len(self.images) * 10 # 10 examples/descriptions per image
 
-        assert len(self.images) == len(self.descriptions), \
-            "img/txt mismatch in Birds.__init__"
+        #assert len(self.images) == len(self.descriptions), \
+        #    "img/txt mismatch in Birds.__init__"
 
     def __len__(self):
         return self.N
 
     def __getitem__(self, i):
-        return self.images[i],self.descriptions[i]
+        return self.descriptions[i,0]
 
     def _load_images(self, img_dir):
         self.images = list()
@@ -40,25 +41,39 @@ class Birds(Dataset):
         print("done!")
 
     def _load_descriptions(self, txt_dir):
-        self.descriptions = dict()
-
         print("Loading txt descriptions...")
 
+        # all folders in current directory
+        # each folder/subdir corresponds to a species of Bird
         subdirs = np.asarray([w for _,w,_ in os.walk(txt_dir)][0])
-        desc_sets = np.asarray([f for _,_,f in os.walk(txt_dir)][1:])
+        # all files within each folder
+        # each sub-list contains files for a specific species
+        file_sets = np.asarray([f for _,_,f in os.walk(txt_dir)][1:])
 
+        # parallel sort by species/class ID
         sorted_indices = np.argsort(subdirs,axis=0)
         subdirs = subdirs[sorted_indices]
-        desc_sets = desc_sets[sorted_indices]
+        file_sets = file_sets[sorted_indices]
 
-        counter = 0
-        for i in range(len(desc_sets)):
-            tmp = list()
-            for dset in desc_sets:
-                if dset[-4:] == ".txt":
-                    tmp.append(list)
-                    counter += 1
-            desc_sets[i] = tmp.copy()
+        # remove extra files (non-".txt") and determin number of files remaining
+        num_files = 0
+        for file_set in file_sets:
+            # traverse backwards becuase items are being deleted
+            for j in range(len(file_set)-1,-1,-1):
+                if file_set[j][-4:] != ".txt":
+                    del file_set[j]
+            num_files += len(file_set)
 
+        self.descriptions = np.full((num_files,self.desc_per_img), None, dtype=object)
+
+        i = 0
+        for subdir,file_set in zip(subdirs,file_sets):
+            for file_name in file_set:
+                with open(txt_dir +'/'+ subdir +'/'+ file_name) as f:
+                    for j,line in enumerate(f):
+                        self.descriptions[i,j] = line
+                    # make sure number of descriptions is corect
+                    assert j == self.desc_per_img-1
+            i += 1
 
         print("done!")
