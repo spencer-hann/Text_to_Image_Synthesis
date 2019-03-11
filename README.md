@@ -16,5 +16,5 @@ From Caltech and Oxford websites:
 ### Preprocessed w/Text descriptions  
 
 From primary author's [github repo](https://github.com/reedscot/icml2016):
- * [Birds from github.com/reedscot/icml2016](https://drive.google.com/file/d/0B0ywwgffWnLLLUc2WHYzM0Q2eWc/view)
- * [Flowers from github.com/reedscot/icml2016](https://drive.google.com/file/d/0B0ywwgffWnLLMl9uOU91MV80cVU/view)
+ * [Birds from github.com/reedscot/cvpr2016](https://drive.google.com/file/d/0B0ywwgffWnLLZW9uVHNjb2JmNlE/view)
+ * [Flowers from github.com/reedscot/cvpr2016](https://drive.google.com/file/d/0B0ywwgffWnLLcms2WWJQRFNSWXM/view)
