@@ -39,14 +39,16 @@ class Birds(Dataset):
         transformations = transforms.Compose([
         transforms.Resize(self.img_dim),
         transforms.CenterCrop(self.img_dim),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])]) ## Should look into the values one more time
+        transforms.ToTensor(),])
 
         image_dataset = datasets.ImageFolder("./data/Birds/images", transform = transformations)
         self.images = torch.empty([len(image_dataset),3,self.img_dim,self.img_dim])
 
         for i,(img,_ )in enumerate(image_dataset):
-            self.images[i] = img
+            self.images[i,:,:,:] = img[:,:,:]
+            #TODO: remove during production
+            if i > 100:
+                break
         print("done!")
 
     def _load_descriptions(self, txt_dir):
