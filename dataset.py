@@ -25,8 +25,10 @@ class Birds(Dataset):
     def __len__(self):
         return self.N
 
-    def __getitem__(self, i):
-        return self.descriptions[i,0]
+    def __getitem__(self, index):
+        i = index // self.desc_per_img
+        j = index % self.desc_per_img
+        return self.images[i], self.descriptions[i,j]
 
     def _load_images(self, img_dir):
         self.images = list()
