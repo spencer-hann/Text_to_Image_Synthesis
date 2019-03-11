@@ -28,13 +28,9 @@ class Birds(Dataset):
         return self.N
 
     def __getitem__(self, index):
-<<<<<<< HEAD
         i = index // self.desc_per_img
         j = index % self.desc_per_img
         return self.images[i], self.descriptions[i,j]
-=======
-        return self.images[index],self.descriptions[i]
->>>>>>> aark
 
     def _load_images(self, img_dir):
         print("Loading images...")
