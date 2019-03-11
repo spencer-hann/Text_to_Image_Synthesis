@@ -10,7 +10,7 @@ Authors: [Scott Reed](https://github.com/reedscot), Zeynep Akata, Xinchen Yan, L
 ### General Use  
 
 From Caltech and Oxford websites:
- * [Caltech-UCSD Birds 200](http://www.vision.caltech.edu/visipedia/CUB-200.html)  
+ * [Caltech-UCSD Birds-200-2011](http://www.vision.caltech.edu/visipedia/CUB-200-2011.html)  
  * [Oxford-102 Flowers](http://www.robots.ox.ac.uk/~vgg/data/flowers/102/)  
  
 ### Preprocessed w/Text descriptions  
