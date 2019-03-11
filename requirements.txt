@@ -1,3 +1,6 @@
 torch
 torchvision
+torchfile
 scipy
+numpy
+matplotlib
