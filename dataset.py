@@ -18,17 +18,17 @@ class Birds(Dataset):
         self._load_descriptions(txt_dir)
         self._load_images(img_dir)
 
-        #self.N = len(self.images) * 10 # 10 examples/descriptions per image
+        self.N = len(self.images) * 10 # 10 examples/descriptions per image
 
-        #assert len(self.images) == len(self.descriptions), \
-            #"img/txt mismatch in Birds.__init__"
+        assert len(self.images) == len(self.descriptions), \
+            "img/txt mismatch in Birds.__init__"
 
     def __len__(self):
         return self.N
 
-    def __getitem__(self, i):
-        #return self.images[i],self.descriptions[i]
-        pass
+    def __getitem__(self, index):
+        return self.images[index],self.descriptions[i]
+
     def _load_images(self, img_dir):
         print("Loading images...")
         self.img_dim =  180
