@@ -1,9 +1,11 @@
 import numpy as np
 import os
 import sys
+import torch
 from PIL import Image
 from torch.utils.data import Dataset, DataLoader
-from torchvision import transforms, utils
+from torchvision import transforms, utils, models, datasets
+
 
 Birds_img_dir = "./data/Birds/images"
 Birds_txt_dir = "./data/Birds/cub_cvpr/text_c10"
@@ -14,29 +16,34 @@ class Birds(Dataset):
     def __init__(self, img_dir=Birds_img_dir, txt_dir=Birds_txt_dir):
 
         self._load_descriptions(txt_dir)
-        #self._load_images(img_dir)
+        self._load_images(img_dir)
 
-        self.N = len(self.images) * 10 # 10 examples/descriptions per image
+        #self.N = len(self.images) * 10 # 10 examples/descriptions per image
 
-        assert len(self.images) == len(self.descriptions), \
-            "img/txt mismatch in Birds.__init__"
+        #assert len(self.images) == len(self.descriptions), \
+            #"img/txt mismatch in Birds.__init__"
 
     def __len__(self):
         return self.N
 
     def __getitem__(self, i):
-        return self.images[i],self.descriptions[i]
-
+        #return self.images[i],self.descriptions[i]
+        pass
     def _load_images(self, img_dir):
-        self.images = list()
-
         print("Loading images...")
+        self.img_dim =  180
+        # Resizing all images to uniform size
+        transformations = transforms.Compose([
+        transforms.Resize(self.img_dim),
+        transforms.CenterCrop(self.img_dim),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])]) ## Should look into the values one more time
 
-        for subdir, dirs, files in os.walk(img_dir):
-            print(subdir,dirs)
-            for file in files:
-                img = Image.open(file)
-                self.images.append(torch.Tensor(img))
+        image_dataset = datasets.ImageFolder("./data/Birds/images", transform = transformations)
+        self.images = torch.empty([len(image_dataset),3,self.img_dim,self.img_dim])
+
+        for i,(img,_ )in enumerate(image_dataset):
+            self.images[i] = img
         print("done!")
 
     def _load_descriptions(self, txt_dir):
