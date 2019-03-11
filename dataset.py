@@ -7,7 +7,7 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms, utils, models, datasets
 
 
-Birds_img_dir = "./data/Birds/Caltech-UVSD-Birds-200-2011/CUB_200_2011/images"
+Birds_img_dir = "./data/Birds/Caltech-UCSD-Birds-200-2011/CUB_200_2011/images"
 Birds_txt_dir = "./data/Birds/cub_cvpr/text_c10"
 
 class Birds(Dataset):
@@ -30,7 +30,7 @@ class Birds(Dataset):
     def __getitem__(self, index):
         i = index // self.desc_per_img
         j = index % self.desc_per_img
-        return self.images[i], self.descriptions[i,j]
+        return self.images[i], self.descriptions[i,j], self.file_names[i]
 
     def _load_images(self, img_dir):
         print("Loading images...")
@@ -41,14 +41,13 @@ class Birds(Dataset):
         transforms.CenterCrop(self.img_dim),
         transforms.ToTensor(),])
 
-        image_dataset = datasets.ImageFolder("./data/Birds/images", transform = transformations)
+        image_dataset = datasets.ImageFolder(img_dir, transform = transformations)
         self.images = torch.empty([len(image_dataset),3,self.img_dim,self.img_dim])
 
         for i,(img,_ )in enumerate(image_dataset):
             self.images[i,:,:,:] = img[:,:,:]
             #TODO: remove during production
-            if i > 100:
-                break
+            #if i > 100: break
         print("done!")
 
     def _load_descriptions(self, txt_dir):
@@ -75,16 +74,23 @@ class Birds(Dataset):
                     del file_set[j]
             num_files += len(file_set)
 
-        self.descriptions = np.full((num_files,self.desc_per_img), None, dtype=object)
+        self.file_names = np.empty(num_files, dtype=object) # object is str
+        self.descriptions = np.empty((num_files,self.desc_per_img), dtype=object)
 
         i = 0
         for subdir,file_set in zip(subdirs,file_sets):
+
+            file_set.sort()
+
             for file_name in file_set:
+
+                self.file_names[i] = file_name
+
                 with open(txt_dir +'/'+ subdir +'/'+ file_name) as f:
                     for j,line in enumerate(f):
-                        self.descriptions[i,j] = line
+                        self.descriptions[i,j] = line.strip()
                     # make sure number of descriptions is corect
                     assert j == self.desc_per_img-1
-            i += 1
+                i += 1
 
         print("done!")
