@@ -13,7 +13,7 @@ import torch.utils.data
 import torchvision.datasets as dset
 import torchvision.transforms as transforms
 import torchvision.utils as vutils
-from dataset2 import TTI_Datset
+from dataset2 import TTI_Dataset
 
 
 parser = argparse.ArgumentParser()
@@ -172,7 +172,7 @@ cudnn.benchmark = True
 if torch.cuda.is_available() and not opt.cuda:
     print("WARNING: You have a CUDA device, so you should probably run with --cuda")
 
-dataset = TTI_Datset()
+dataset = TTI_Dataset()
 nc=3
 
 print('loaded dataset')
@@ -250,9 +250,9 @@ for epoch in range(opt.niter):
 
         # train with fake
         noise = torch.randn(batch_size, nz, 1, 1, device=device)
-        fake = netG(noise)
+        fake = netG(re, noise)
         label.fill_(fake_label)
-        output = netD(fake.detach())
+        output = netD(fake.detach(), re)
         errD_fake = criterion(output, label)
         errD_fake.backward()
         D_G_z1 = output.mean().item()
@@ -264,7 +264,7 @@ for epoch in range(opt.niter):
         ###########################
         netG.zero_grad()
         label.fill_(real_label)  # fake labels are real for generator cost
-        output = netD(fake)
+        output = netD(fake, re)
         errG = criterion(output, label)
         errG.backward()
         D_G_z2 = output.mean().item()
@@ -274,10 +274,10 @@ for epoch in range(opt.niter):
               % (epoch, opt.niter, i, len(dataloader),
                  errD.item(), errG.item(), D_x, D_G_z1, D_G_z2))
         if i % 100 == 0:
-            vutils.save_image(real_cpu,
+            vutils.save_image(ri,
                     '%s/real_samples.png' % opt.outf,
                     normalize=True)
-            fake = netG(fixed_noise)
+            fake = netG(re ,fixed_noise)
             vutils.save_image(fake.detach(),
                     '%s/fake_samples_epoch_%03d.png' % (opt.outf, epoch),
                     normalize=True)

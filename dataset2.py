@@ -10,7 +10,7 @@ import random
 
 # test to image dataset
 # data type: train, test, valid
-class TTI_Datset(Dataset):
+class TTI_Dataset(Dataset):
     def __init__(self, data_type='train'):
         self.image_paths = []
         self.embeddings = []
