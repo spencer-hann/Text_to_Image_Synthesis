@@ -55,11 +55,14 @@ class TTI_Datset(Dataset):
         takes in index for real images
         Needs to return real img, fake img, real txt, fake txt
         '''
+        r1 = random.randint(0, 9)
+        r2 = random.randint(0, 9)
         right_image = self._get_image(self.image_paths[i])
-        right_embed = self.embeddings[i]
+        
+        right_embed = self.embeddings[i][r1]
         # generate 2 random nums != i
         population = [x for x in range(len(self.embeddings)) if x != i]
         r = random.sample(population, 1)
-        wrong_embed = self.embeddings[r[0]]
+        wrong_embed = self.embeddings[r[0]][r2]
 
         return (right_image, right_embed, wrong_embed)

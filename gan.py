@@ -20,7 +20,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', default='folder' , help='cifar10 | lsun | mnist |imagenet | folder | lfw | fake')
 parser.add_argument('--dataroot', default='.', help='path to dataset')
 parser.add_argument('--workers', type=int, help='number of data loading workers', default=2)
-parser.add_argument('--batchSize', type=int, default=1, help='input batch size')
+parser.add_argument('--batchSize', type=int, default=32, help='input batch size')
 parser.add_argument('--imageSize', type=int, default=64, help='the height / width of the input image to network')
 parser.add_argument('--nz', type=int, default=100, help='size of the latent z vector')
 parser.add_argument('--ngf', type=int, default=64)
@@ -34,6 +34,24 @@ parser.add_argument('--netG', default='', help="path to netG (to continue traini
 parser.add_argument('--netD', default='', help="path to netD (to continue training)")
 parser.add_argument('--outf', default='.', help='folder to output images and model checkpoints')
 parser.add_argument('--manualSeed', type=int, help='manual seed')
+
+
+class Concat(nn.Module):
+
+    def __init__(self, embed_dim, projected_embed_dim):
+        super(Concat, self).__init__()
+        self.projection = nn.Sequential(
+            nn.Linear(in_features=embed_dim, out_features=projected_embed_dim),
+            nn.BatchNorm1d(num_features=projected_embed_dim),
+            nn.LeakyReLU(negative_slope=0.2, inplace=True)
+            )
+
+    def forward(self, inp, embed):
+        projected_embed = self.projection(embed)
+        replicated_embed = projected_embed.repeat(4, 4, 1, 1).permute(2,  3, 0, 1)
+        hidden_concat = torch.cat([inp, replicated_embed], 1)
+
+        return hidden_concat
 
 # custom weights initialization called on netG and netD
 def weights_init(m):
@@ -58,7 +76,7 @@ class Generator(nn.Module):
 
         self.projection = nn.Sequential(
             nn.Linear(in_features=self.embed_dim, out_features=self.projected_dim),
-            #nn.BatchNorm1d(num_features=self.projected_dim),
+            nn.BatchNorm1d(num_features=self.projected_dim),
             nn.LeakyReLU(negative_slope=0.2, inplace=True)
         )
 
@@ -101,12 +119,6 @@ class Discriminator(nn.Module):
         self.nc = 3
         self.ndf = 64
 
-        self.projection = nn.Sequential(
-            nn.Linear(in_features=self.embed_dim, out_features=self.projected_dim),
-            nn.BatchNorm1d(num_features=self.projected_dim),
-            nn.LeakyReLU(negative_slope=0.2, inplace=True)
-        )
-
         self.D1 = nn.Sequential(
             # input is (nc) x 64 x 64
             nn.Conv2d(self.nc, self.ndf, 4, 2, 1, bias=False),
@@ -124,6 +136,7 @@ class Discriminator(nn.Module):
             nn.BatchNorm2d(self.ndf * 8),
             nn.LeakyReLU(0.2, inplace=True),
         )
+        self.projector = Concat(self.embed_dim, self.projected_dim)
 
         self.D2 = nn.Sequential(
             # state size. (ndf*8) x 4 x 4
@@ -132,9 +145,8 @@ class Discriminator(nn.Module):
         )
 
     def forward(self, img, txt):
-        projected_embed = self.projection(txt).unsqueeze(2).unsqueeze(3)
         intermediate = self.D1(img)
-        output = torch.cat([intermediate, projected_embed], 1)
+        output = self.projector(intermediate, txt)
         output = self.D2(output)
 
         return output.view(-1, 1).squeeze(1)
