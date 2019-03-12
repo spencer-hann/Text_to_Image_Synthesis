@@ -244,7 +244,6 @@ for epoch in range(opt.niter):
         batch_size = ri.size(0)
         label = torch.full((batch_size,), real_label, device=device)
         output = netD(ri, re)
-
         errD_real = criterion(output, label)
         errD_real.backward()
         D_x = output.mean().item()

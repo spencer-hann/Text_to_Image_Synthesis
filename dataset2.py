@@ -14,7 +14,7 @@ class TTI_Datset(Dataset):
     def __init__(self, data_type='train'):
         self.image_paths = []
         self.embeddings = []
-        self.img_dim = 128
+        self.img_dim = 64
         cwd = os.getcwd()
         data_path = os.path.join(cwd, 'data')
         id_path = os.path.join(data_path, data_type + 'ids.txt')
@@ -58,7 +58,7 @@ class TTI_Datset(Dataset):
         r1 = random.randint(0, 9)
         r2 = random.randint(0, 9)
         right_image = self._get_image(self.image_paths[i])
-        
+
         right_embed = self.embeddings[i][r1]
         # generate 2 random nums != i
         population = [x for x in range(len(self.embeddings)) if x != i]
