@@ -19,7 +19,7 @@ class Birds(Dataset):
         self._load_descriptions(txt_dir)
         self._load_images(img_dir)
 
-        #self.N = len(self.images) * 10 # 10 examples/descriptions per image
+        self.N = len(self.images) * 10 # 10 examples/descriptions per image
 
         #assert len(self.images) == len(self.descriptions), \
         #    "img/txt mismatch in Birds.__init__"

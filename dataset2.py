@@ -27,8 +27,8 @@ class TTI_Dataset(Dataset):
 
         # image handling
         self.transformations = transforms.Compose([
-        transforms.Resize(self.img_dim),
-        transforms.CenterCrop(self.img_dim),
+        transforms.Resize((self.img_dim, self.img_dim)),
+        transforms.CenterCrop((self.img_dim, self.img_dim)),
         transforms.ToTensor(),])
         # get all t7 files for training/test set
         for l in self.labels:
@@ -39,15 +39,22 @@ class TTI_Dataset(Dataset):
                 self.embeddings.append(temp[b'txt'])
                 # get associated image
                 im_file = temp[b'img'].decode('UTF8')
-                #im = Image.open(os.path.join(subdir, im_file))
                 im = os.path.join(images_path, im_file)
                 self.image_paths.append(im)
+        self.validate_embeddings()
+
+    def validate_embeddings(self):
+        k = len(self.embeddings)
+        sz = self.embeddings[0].shape
+        for e in self.embeddings:
+            assert(sz == e.shape)
 
     def __len__(self):
         return len(self.embeddings)
 
     def _get_image(self, path):
-        im = Image.open(path)
+        #print(path)
+        im = Image.open(path).convert('RGB')
         return self.transformations(im)
 
     def __getitem__(self, i):

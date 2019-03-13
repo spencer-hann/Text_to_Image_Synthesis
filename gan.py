@@ -42,7 +42,7 @@ class Concat(nn.Module):
         super(Concat, self).__init__()
         self.projection = nn.Sequential(
             nn.Linear(in_features=embed_dim, out_features=projected_embed_dim),
-            nn.BatchNorm1d(num_features=projected_embed_dim),
+            #nn.BatchNorm1d(num_features=projected_embed_dim),
             nn.LeakyReLU(negative_slope=0.2, inplace=True)
             )
 
@@ -76,7 +76,7 @@ class Generator(nn.Module):
 
         self.projection = nn.Sequential(
             nn.Linear(in_features=self.embed_dim, out_features=self.projected_dim),
-            nn.BatchNorm1d(num_features=self.projected_dim),
+            #nn.BatchNorm1d(num_features=self.projected_dim),
             nn.LeakyReLU(negative_slope=0.2, inplace=True)
         )
 
@@ -218,21 +218,13 @@ for epoch in range(opt.niter):
 
         # steps from Algorithm 1 from paper
         #5. get noise vector z
-
         #6 fi = forward G(z, re)
-
         #7 s_r = D(ri, re)
-
         #8 s_w D(ri, we)
-
         #9 s_f D(fi, re)
-
         #10 Calculate L_D = log(s_r) + (log(1-s_w) + log(1-s_f))/2
-
         #11 Update D
-
-        #12 Calculate L_G = log(s_f)
-
+        #12 Calculate L_G = log(s_f)s
         #13 Update G
 
         ############################
