@@ -13,7 +13,7 @@ class Concat(nn.Module):
         super(Concat, self).__init__()
         self.projection = nn.Sequential(
             nn.Linear(in_features=embed_dim, out_features=projected_embed_dim),
-            #nn.BatchNorm1d(num_features=projected_embed_dim),
+            nn.BatchNorm1d(num_features=projected_embed_dim),
             nn.LeakyReLU(negative_slope=0.2, inplace=True)
             )
 
