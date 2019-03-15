@@ -37,6 +37,8 @@ parser.add_argument('--netD', default='', help="path to netD (to continue traini
 parser.add_argument('--outf', default='.', help='folder to output images and model checkpoints')
 parser.add_argument('--manualSeed', type=int, help='manual seed')
 
+parser.add_argument('--cls', action='store_true', help='activates cls run')
+
 # custom weights initialization called on netG and netD
 def weights_init(m):
     classname = m.__class__.__name__
@@ -125,11 +127,13 @@ for epoch in range(opt.niter):
         errD_real.backward()
         D_x = output.mean().item()
 
-        # cls real img, fake embed
-        label.fill_(fake_label)
-        output2 = netD(real_image, wrong_embedding)
-        errD_wrong = criterion(output2, label)
-        errD_wrong.backward()
+        if opt.cls:
+            # cls real img, fake embed
+            label.fill_(fake_label)
+            output = netD(real_image, wrong_embedding)
+            errD_wrong = criterion(output2, label)
+            errD_wrong.backward()
+
         # train with fake
         noise = torch.randn(batch_size, nz, 1, 1, device=device)
         fake = netG(real_embedding, noise)
@@ -137,7 +141,11 @@ for epoch in range(opt.niter):
         output = netD(fake.detach(), real_embedding)
         errD_fake = criterion(output, label)
         errD_fake.backward()
-        errD = errD_real + errD_fake + errD_wrong
+
+        if opt.cls:
+            errD = errD_real + errD_fake + errD_wrong
+        else:
+            errD = errD_real + errD_fake
 
         D_G_z1 = output.mean().item()
         optimizerD.step()
@@ -153,11 +161,8 @@ for epoch in range(opt.niter):
         D_G_z2 = output.mean().item()
         optimizerG.step()
 
-
-
-        print('[%d/%d][%d/%d] Loss_D: %.4f Loss_G: %.4f D(x): %.4f D(G(z)): %.4f / %.4f'
-              % (epoch, opt.niter, i, len(dataloader),
-                 errD.item(), errG.item(), D_x, D_G_z1, D_G_z2))
+        print("[{}/{}][{}/{}] Loss_D: {:.4f} | Loss_G: {:.4f} | D(x) {:.4f} | D(G(z)): {:.4f} / {:.4f}"
+            .format(epoch, opt.niter, i, len(dataloader), errD.item(), errG.item(), D_x, D_G_z1, D_G_z2)
         if i % 100 == 0:
             vutils.save_image(real_image,
                     '%s/real_samples.png' % opt.outf,
