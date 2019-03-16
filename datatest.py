@@ -3,6 +3,7 @@ from matplotlib.pyplot import imshow, show
 import matplotlib.pyplot as plt
 from PIL import Image
 from torchvision import transforms
+
 data = Birds()
 
 test_num = 4300
