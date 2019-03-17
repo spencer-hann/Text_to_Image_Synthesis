@@ -9,6 +9,7 @@ data = Birds()
 test_num = 4300
 
 test = data[test_num]
+test = data.get_full_item(test_num)
 print(test[1:]) #don't print image tensor
 to_pil = transforms.ToPILImage()
 img = to_pil(test[0])
