@@ -130,5 +130,3 @@ class Birds(Dataset):
                     assert j == self.desc_per_img-1
 
                 file_num += 1
-
-

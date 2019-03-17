@@ -3,6 +3,7 @@ from torch import nn, optim
 from torch.autograd.variable import Variable
 from torchvision import transforms, datasets
 from time import time
+import matplotlib.pyplot as plt
 
 # START classes
 class DiscriminatorNet(torch.nn.Module):
@@ -202,4 +203,5 @@ if __name__=='__main__':
                 test_images = vectors_to_images(generator(test_noise))
                 test_images = test_images.data
                 print("d_error {} | g_error {}".format(d_error, g_error))
+
         print("epoch time: {:.2f} seconds".format(time() - t0))
