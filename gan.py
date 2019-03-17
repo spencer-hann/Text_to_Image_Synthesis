@@ -6,6 +6,7 @@ import os
 import time
 import random
 import torch
+import math
 import torch.nn as nn
 import torch.nn.parallel
 import torch.backends.cudnn as cudnn
@@ -16,7 +17,8 @@ import torchvision.transforms as transforms
 import torchvision.utils as vutils
 from dataset2 import TTI_Dataset
 from models import Concat, Discriminator, Generator
-
+import inception
+import matplotlib.pyplot as plt
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', default='folder' , help='cifar10 | lsun | mnist |imagenet | folder | lfw | fake')
@@ -47,6 +49,15 @@ def weights_init(m):
     elif classname.find('BatchNorm') != -1:
         m.weight.data.normal_(1.0, 0.02)
         m.bias.data.fill_(0)
+
+def plot(loss, axis_title, title, filename):
+    plt.figure()
+    x_axis = [x for x in range(len(loss))]
+    plt.plot(x_axis, loss)
+    plt.xlabel("Epoch")
+    plt.ylabel(axis_title)
+    plt.title(title)
+    plt.savefig(filename + '_' + axis_title)
 # START
 
 opt = parser.parse_args()
@@ -74,7 +85,8 @@ nc=3
 print('loaded dataset')
 assert dataset
 dataloader = torch.utils.data.DataLoader(dataset, batch_size=opt.batchSize,
-                                         shuffle=True, num_workers=int(opt.workers))
+                                         shuffle=True, drop_last=True,
+                                         num_workers=int(opt.workers))
 
 device = torch.device("cuda:0" if opt.cuda else "cpu")
 ngpu = int(opt.ngpu) # num gpus
@@ -105,8 +117,13 @@ optimizerD = optim.Adam(netD.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
 optimizerG = optim.Adam(netG.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
 print('starting epochs')
 starting_time = time.time()
+inception_scores = []
+total_runs = math.ceil(len(dataset)/opt.batchSize) - 1
+g_loss = []
+d_loss = []
 for epoch in range(opt.niter):
     etime = time.time()
+    tempg = tempd = tot = 0
     # right image, right embed, wrong embed
     for i, (real_image, real_embedding, wrong_embedding) in enumerate(dataloader, 0):
         if opt.cuda:
@@ -131,7 +148,8 @@ for epoch in range(opt.niter):
             # cls real img, fake embed
             label.fill_(fake_label)
             output = netD(real_image, wrong_embedding)
-            errD_wrong = criterion(output2, label)
+            errD_wrong = criterion(output, label)
+            errD_wrong = torch.div(errD_wrong, 2)
             errD_wrong.backward()
 
         # train with fake
@@ -140,12 +158,13 @@ for epoch in range(opt.niter):
         label.fill_(fake_label)
         output = netD(fake.detach(), real_embedding)
         errD_fake = criterion(output, label)
+        errD_fake = torch.div(errD_fake, 2)
         errD_fake.backward()
 
+        errD = errD_real + errD_fake
         if opt.cls:
-            errD = errD_real + errD_fake + errD_wrong
-        else:
-            errD = errD_real + errD_fake
+            errD += errD_wrong
+
 
         D_G_z1 = output.mean().item()
         optimizerD.step()
@@ -161,9 +180,12 @@ for epoch in range(opt.niter):
         D_G_z2 = output.mean().item()
         optimizerG.step()
 
-        print("[{}/{}][{}/{}] Loss_D: {:.4f} | Loss_G: {:.4f} | D(x) {:.4f} | D(G(z)): {:.4f} / {:.4f}"
-            .format(epoch, opt.niter, i, len(dataloader), errD.item(), errG.item(), D_x, D_G_z1, D_G_z2))
-        if i % 92 == 0:
+        tempg += errG.item()
+        tempd += errD.item()
+        tot += 1
+        print("[{}/{}][{}/{}] Loss_D: {:.4f} | Loss_G: {:.4f} | D(x) {:.4f} | D(G(z)): {:.8f}"
+            .format(epoch, opt.niter, i, len(dataloader), errD.item(), errG.item(), D_x, D_G_z1 / D_G_z2))
+        if i % total_runs == 0:
             vutils.save_image(real_image,
                     '%s/real_samples.png' % opt.outf,
                     normalize=True)
@@ -172,8 +194,12 @@ for epoch in range(opt.niter):
                     '%s/fake_samples_epoch_%03d.png' % (opt.outf, epoch),
                     normalize=True)
     print("Epoch time:", time.time() - etime)
+    g_loss.append(tempg/tot)
+    d_loss.append(tempd/tot)
     # do checkpointing
     torch.save(netG.state_dict(), '%s/netG_epoch_%d.pth' % (opt.outf, epoch))
     torch.save(netD.state_dict(), '%s/netD_epoch_%d.pth' % (opt.outf, epoch))
+plot(g_loss, 'Generator Loss', "GAN - Generator Loss", 'gan_losses')
+plot(d_loss, 'Discriminator Loss', 'GAN - Discriminator Loss', 'gan_losses')
 ending_time = time.time()
 print("Total runtime for epochs", ending_time - starting_time)
