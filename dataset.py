@@ -17,8 +17,12 @@ class Birds(Dataset):
     def __init__(self,
             img_dir=Birds_img_dir,
             txt_dir=Birds_txt_dir,
+            descriptions_per_image=10,
             encoding_dim=1024):
-        self.desc_per_img = 1 # number of text descriptions per image
+        if descriptions_per_image > 10:
+            descriptions_per_image = 10 # we only have 10
+
+        self.desc_per_img = descriptions_per_image
         self.encoding_dim=encoding_dim
 
         print("Loading images...")
@@ -41,7 +45,7 @@ class Birds(Dataset):
         print("done!")
 
     def _train_word_embeddings(self):
-        self.embeddings = Word2Vec(self.descriptions, size=self.encoding_dim)
+        self.embeddings = Word2Vec(self.all_descriptions, size=self.encoding_dim)
 
     def _create_txt_encodings(self):
         self.encodings = torch.empty(self.N, self.encoding_dim)
@@ -53,8 +57,6 @@ class Birds(Dataset):
                 if word not in self.embeddings: continue
                 embedding_avg += self.embeddings[word]
                 n_words += 1
-            if n_words == 0:
-                print(sentence)
             embedding_avg /= n_words
             self.encodings[i,:] = torch.from_numpy(embedding_avg)[:]
 
@@ -63,7 +65,17 @@ class Birds(Dataset):
 
     def __getitem__(self, i):
         i_img = i // self.desc_per_img
-        return self.images[i_img], self.encodings[i]
+        img = self.images[i_img]
+        encoding = self.encodings[i]
+
+        i_rand = np.random.randint(0,self.N)
+        # find encoding far from correct encoding
+        while abs(i - i_rand) < self.desc_per_img:
+            i_rand = np.random.randint(0,self.N)
+
+        return self.images[i_img], \
+                self.encodings[i], \
+                self.encodings[i_rand]
 
     def get_full_item(self, i):
         i_img = i // self.desc_per_img
@@ -109,6 +121,7 @@ class Birds(Dataset):
         self.file_names = np.empty(num_files, dtype=object) # object is str
         self.descriptions = np.empty(num_files * self.desc_per_img, dtype=object)
         #self.descriptions = np.empty((num_files,self.desc_per_img), dtype=object)
+        self.all_descriptions = list() # for training word2vec
 
         i = 0
         file_num = 0
@@ -123,11 +136,9 @@ class Birds(Dataset):
                 with open(txt_dir +'/'+ subdir +'/'+ file_name) as f:
 
                     for j,line in enumerate(f):
-                        self.descriptions[i] = word_tokenize(line)
-                        i += 1
-                        if j == self.desc_per_img-1: break
-
-                    # make sure number of descriptions is corect
-                    assert j == self.desc_per_img-1
+                        self.all_descriptions.append(word_tokenize(line))
+                        if j < self.desc_per_img:
+                            self.descriptions[i] = self.all_descriptions[-1]
+                            i += 1
 
                 file_num += 1
