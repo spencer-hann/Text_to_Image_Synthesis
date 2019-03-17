@@ -2,9 +2,11 @@ import numpy as np
 import os
 import sys
 import torch
-from PIL import Image
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms, utils, models, datasets
+from PIL import Image
+from gensim.models import Word2Vec
+from nltk import word_tokenize
 
 
 Birds_img_dir = "./data/Birds/Caltech-UCSD-Birds-200-2011/CUB_200_2011/images"
@@ -12,28 +14,62 @@ Birds_txt_dir = "./data/Birds/cub_cvpr/text_c10"
 
 class Birds(Dataset):
 
-
-    def __init__(self, img_dir=Birds_img_dir, txt_dir=Birds_txt_dir):
+    def __init__(self,
+            img_dir=Birds_img_dir,
+            txt_dir=Birds_txt_dir,
+            encoding_dim=1024):
         self.desc_per_img = 10 # number of text descriptions per image
+        self.encoding_dim=encoding_dim
 
-        self._load_descriptions(txt_dir)
+        print("Loading images...")
         self._load_images(img_dir)
+        print("done!")
 
-        #self.N = len(self.images) * 10 # 10 examples/descriptions per image
+        self.N = len(self.images) * self.desc_per_img
+        #self.N = 117880
 
-        #assert len(self.images) == len(self.descriptions), \
-        #    "img/txt mismatch in Birds.__init__"
+        print("Loading txt descriptions...")
+        self._load_descriptions(txt_dir)
+        print("done!")
 
-    def __len__(self):
-        return self.N
+        print("Training word embeddings...")
+        self._train_word_embeddings()
+        print("done!")
 
-    def __getitem__(self, index):
-        i = index // self.desc_per_img
-        j = index % self.desc_per_img
-        return self.images[i], self.descriptions[i,j], self.file_names[i]
+        print("Creating text encodings...")
+        self._create_txt_encodings()
+        print("done!")
+
+    def _train_word_embeddings(self):
+        self.embeddings = Word2Vec(self.descriptions, size=self.encoding_dim)
+
+    def _create_txt_encodings(self):
+        self.encodings = torch.empty(self.N, self.encoding_dim)
+        embedding_avg = np.empty(self.encoding_dim)
+
+        for i,sentence in enumerate(self.descriptions):
+            n_words = 0
+            for word in sentence:
+                if word not in self.embeddings: continue
+                embedding_avg += self.embeddings[word]
+                n_words += 1
+            if n_words == 0:
+                print(sentence)
+            embedding_avg /= n_words
+            self.encodings[i,:] = torch.from_numpy(embedding_avg)[:]
+
+
+    def __len__(self): return self.N
+
+    def __getitem__(self, i):
+        i_img = i // self.desc_per_img
+        return self.images[i_img], self.encodings[i]
+
+    def get_full_item(self, i):
+        i_img = i // self.desc_per_img
+        return self.images[i_img], self.encodings[i], self.descriptions[i], self.file_names[i_img]
 
     def _load_images(self, img_dir):
-        print("Loading images...")
         self.img_dim =  180
         # Resizing all images to uniform size
         transformations = transforms.Compose([
@@ -46,13 +82,9 @@ class Birds(Dataset):
 
         for i,(img,_ )in enumerate(image_dataset):
             self.images[i,:,:,:] = img[:,:,:]
-            #TODO: remove during production
             #if i > 100: break
-        print("done!")
 
     def _load_descriptions(self, txt_dir):
-        print("Loading txt descriptions...")
-
         # all folders in current directory
         # each folder/subdir corresponds to a species of Bird
         subdirs = np.asarray([w for _,w,_ in os.walk(txt_dir)][0])
@@ -75,22 +107,28 @@ class Birds(Dataset):
             num_files += len(file_set)
 
         self.file_names = np.empty(num_files, dtype=object) # object is str
-        self.descriptions = np.empty((num_files,self.desc_per_img), dtype=object)
+        self.descriptions = np.empty(num_files * self.desc_per_img, dtype=object)
+        #self.descriptions = np.empty((num_files,self.desc_per_img), dtype=object)
 
         i = 0
+        file_num = 0
         for subdir,file_set in zip(subdirs,file_sets):
 
             file_set.sort()
 
             for file_name in file_set:
 
-                self.file_names[i] = file_name
+                self.file_names[file_num] = file_name
 
                 with open(txt_dir +'/'+ subdir +'/'+ file_name) as f:
+
                     for j,line in enumerate(f):
-                        self.descriptions[i,j] = line.strip()
+                        self.descriptions[i] = word_tokenize(line)
+                        i += 1
+
                     # make sure number of descriptions is corect
                     assert j == self.desc_per_img-1
-                i += 1
 
-        print("done!")
+                file_num += 1
+
+
