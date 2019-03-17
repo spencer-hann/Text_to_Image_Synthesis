@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from PIL import Image
 from torchvision import transforms
 
-data = Birds()
+data = Birds(descriptions_per_image=2)
 
 test_num = 4300
 
