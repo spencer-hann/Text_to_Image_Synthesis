@@ -17,7 +17,6 @@ import torchvision.transforms as transforms
 import torchvision.utils as vutils
 from dataset2 import TTI_Dataset
 from models import Concat, Discriminator, Generator
-import inception
 import matplotlib.pyplot as plt
 
 parser = argparse.ArgumentParser()
@@ -199,7 +198,7 @@ for epoch in range(opt.niter):
     # do checkpointing
     torch.save(netG.state_dict(), '%s/netG_epoch_%d.pth' % (opt.outf, epoch))
     torch.save(netD.state_dict(), '%s/netD_epoch_%d.pth' % (opt.outf, epoch))
-plot(g_loss, 'Generator Loss', "GAN - Generator Loss", 'gan_losses')
-plot(d_loss, 'Discriminator Loss', 'GAN - Discriminator Loss', 'gan_losses')
+plot(g_loss, 'Generator Loss', "GAN - Generator_Loss", 'gan_losses')
+plot(d_loss, 'Discriminator Loss', 'GAN - Discriminator_Loss', 'gan_losses')
 ending_time = time.time()
 print("Total runtime for epochs", ending_time - starting_time)
