@@ -89,7 +89,7 @@ class Birds(Dataset):
         return self.images[i_img], self.encodings[i], self.descriptions[i], self.file_names[i_img]
 
     def _load_images(self, img_dir):
-        self.img_dim =  180
+        self.img_dim =  64 # 180
         # Resizing all images to uniform size
         transformations = transforms.Compose([
         transforms.Resize(self.img_dim),
