@@ -15,6 +15,10 @@ import torchvision.datasets as dset
 import torchvision.transforms as transforms
 import torchvision.utils as vutils
 from dataset2 import TTI_Dataset
+<<<<<<< HEAD
+=======
+from dataset import Birds
+>>>>>>> spencer
 from models import Concat, Discriminator, Generator
 
 
@@ -68,7 +72,12 @@ cudnn.benchmark = True
 if torch.cuda.is_available() and not opt.cuda:
     print("WARNING: You have a CUDA device, so you should probably run with --cuda")
 
+<<<<<<< HEAD
 dataset = TTI_Dataset()
+=======
+#dataset = TTI_Dataset()
+dataset = Birds(descriptions_per_image=2, incl_stopwords=False)
+>>>>>>> spencer
 nc=3
 
 print('loaded dataset')
