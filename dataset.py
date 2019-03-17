@@ -7,10 +7,13 @@ from torchvision import transforms, utils, models, datasets
 from PIL import Image
 from gensim.models import Word2Vec
 from nltk import word_tokenize
+from nltk.corpus import stopwords
 
 
-Birds_img_dir = "./data/Birds/Caltech-UCSD-Birds-200-2011/CUB_200_2011/images"
-Birds_txt_dir = "./data/Birds/cub_cvpr/text_c10"
+#Birds_img_dir = "./data/Birds/Caltech-UCSD-Birds-200-2011/CUB_200_2011/images"
+#Birds_txt_dir = "./data/Birds/cub_cvpr/text_c10"
+Birds_img_dir = "./Birds_for_google_colab/Caltech-UCSD-Birds-200-2011/CUB_200_2011/images"
+Birds_txt_dir = "./Birds_for_google_colab/cub_cvpr/text_c10"
 
 class Birds(Dataset):
 
@@ -18,12 +21,14 @@ class Birds(Dataset):
             img_dir=Birds_img_dir,
             txt_dir=Birds_txt_dir,
             descriptions_per_image=10,
-            encoding_dim=1024):
+            encoding_dim=1024,
+            incl_stopwords=True):
         if descriptions_per_image > 10:
             descriptions_per_image = 10 # we only have 10
 
         self.desc_per_img = descriptions_per_image
         self.encoding_dim=encoding_dim
+        self.incl_stopwords = incl_stopwords
 
         print("Loading images...")
         self._load_images(img_dir)
@@ -54,7 +59,9 @@ class Birds(Dataset):
         for i,sentence in enumerate(self.descriptions):
             n_words = 0
             for word in sentence:
-                if word not in self.embeddings: continue
+                if not self.incl_stopwords and word in stopwords \
+                        or word not in self.embeddings:
+                    continue
                 embedding_avg += self.embeddings[word]
                 n_words += 1
             embedding_avg /= n_words
