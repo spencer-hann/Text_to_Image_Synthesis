@@ -18,7 +18,7 @@ class Birds(Dataset):
             img_dir=Birds_img_dir,
             txt_dir=Birds_txt_dir,
             encoding_dim=1024):
-        self.desc_per_img = 10 # number of text descriptions per image
+        self.desc_per_img = 1 # number of text descriptions per image
         self.encoding_dim=encoding_dim
 
         print("Loading images...")
@@ -125,6 +125,7 @@ class Birds(Dataset):
                     for j,line in enumerate(f):
                         self.descriptions[i] = word_tokenize(line)
                         i += 1
+                        if j == self.desc_per_img-1: break
 
                     # make sure number of descriptions is corect
                     assert j == self.desc_per_img-1
