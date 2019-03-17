@@ -63,7 +63,17 @@ class Birds(Dataset):
 
     def __getitem__(self, i):
         i_img = i // self.desc_per_img
-        return self.images[i_img], self.encodings[i]
+        img = self.images[i_img]
+        encoding = self.encodings[i]
+
+        i_rand = np.randint(0,self.N)
+        # find encoding far from correct encoding
+        while abs(i - i_rand) < self.desc_per_img:
+            i_rand = np.randint(0,self.N)
+
+        return self.images[i_img],
+                self.encodings[i],
+                self.encodings[i_rand]
 
     def get_full_item(self, i):
         i_img = i // self.desc_per_img
