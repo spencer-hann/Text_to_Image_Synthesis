@@ -70,7 +70,7 @@ if torch.cuda.is_available() and not opt.cuda:
     print("WARNING: You have a CUDA device, so you should probably run with --cuda")
 
 #dataset = TTI_Dataset()
-dataset = Birds()
+dataset = Birds(descriptions_per_image=2, incl_stopwords=False)
 nc=3
 
 print('loaded dataset')

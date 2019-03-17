@@ -10,10 +10,10 @@ from nltk import word_tokenize
 from nltk.corpus import stopwords
 
 
-Birds_img_dir = "./data/Birds/Caltech-UCSD-Birds-200-2011/CUB_200_2011/images"
-Birds_txt_dir = "./data/Birds/cub_cvpr/text_c10"
-#Birds_img_dir = "./Birds_for_google_colab/Caltech-UCSD-Birds-200-2011/CUB_200_2011/images"
-#Birds_txt_dir = "./Birds_for_google_colab/cub_cvpr/text_c10"
+#Birds_img_dir = "./data/Birds/Caltech-UCSD-Birds-200-2011/CUB_200_2011/images"
+#Birds_txt_dir = "./data/Birds/cub_cvpr/text_c10"
+Birds_img_dir = "./Birds_for_google_colab/Caltech-UCSD-Birds-200-2011/CUB_200_2011/images"
+Birds_txt_dir = "./Birds_for_google_colab/cub_cvpr/text_c10"
 
 class Birds(Dataset):
 
@@ -30,6 +30,7 @@ class Birds(Dataset):
         self.encoding_dim=encoding_dim
         self.incl_stopwords = incl_stopwords
 
+        print(f"Loading Birds dataset in `dataset.py`: desc_per_img:{descriptions_per_image}, encoding_dim{encoding_dim}, incl_stopwords:{incl_stopwords}")
         print("Loading images...")
         self._load_images(img_dir)
         print("done!")
