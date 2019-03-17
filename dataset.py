@@ -17,8 +17,12 @@ class Birds(Dataset):
     def __init__(self,
             img_dir=Birds_img_dir,
             txt_dir=Birds_txt_dir,
+            descriptions_per_image=10,
             encoding_dim=1024):
-        self.desc_per_img = 10 # number of text descriptions per image
+        if descriptions_per_image > 10:
+            descriptions_per_image = 10 # we only have 10
+
+        self.desc_per_img = descriptions_per_image
         self.encoding_dim=encoding_dim
 
         print("Loading images...")
@@ -71,8 +75,8 @@ class Birds(Dataset):
         while abs(i - i_rand) < self.desc_per_img:
             i_rand = np.randint(0,self.N)
 
-        return self.images[i_img],
-                self.encodings[i],
+        return self.images[i_img], \
+                self.encodings[i], \
                 self.encodings[i_rand]
 
     def get_full_item(self, i):
@@ -135,9 +139,7 @@ class Birds(Dataset):
                     for j,line in enumerate(f):
                         self.descriptions[i] = word_tokenize(line)
                         i += 1
-
-                    # make sure number of descriptions is corect
-                    assert j == self.desc_per_img-1
+                        if j == self.desc_per_img-1: break
 
                 file_num += 1
 
