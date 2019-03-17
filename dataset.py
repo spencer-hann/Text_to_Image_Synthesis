@@ -21,12 +21,12 @@ class Birds(Dataset):
         self.desc_per_img = 10 # number of text descriptions per image
         self.encoding_dim=encoding_dim
 
-        #print("Loading images...")
-        #self._load_images(img_dir)
-        #print("done!")
+        print("Loading images...")
+        self._load_images(img_dir)
+        print("done!")
 
-        #self.N = len(self.images) * self.desc_per_img
-        self.N = 117880
+        self.N = len(self.images) * self.desc_per_img
+        #self.N = 117880
 
         print("Loading txt descriptions...")
         self._load_descriptions(txt_dir)
@@ -61,11 +61,13 @@ class Birds(Dataset):
 
     def __len__(self): return self.N
 
-    def __getitem__(self, index):
-        i = index // self.desc_per_img
-        #j = index % self.desc_per_img
-        #return self.images[i], self.encodings[index]
-        return self.descriptions[index]
+    def __getitem__(self, i):
+        i_img = i // self.desc_per_img
+        return self.images[i_img], self.encodings[i]
+
+    def get_full_item(self, i):
+        i_img = i // self.desc_per_img
+        return self.images[i_img], self.encodings[i], self.descriptions[i], self.file_names[i_img]
 
     def _load_images(self, img_dir):
         self.img_dim =  180
@@ -109,20 +111,24 @@ class Birds(Dataset):
         #self.descriptions = np.empty((num_files,self.desc_per_img), dtype=object)
 
         i = 0
+        file_num = 0
         for subdir,file_set in zip(subdirs,file_sets):
 
             file_set.sort()
 
             for file_name in file_set:
 
-                #self.file_names[i] = file_name
+                self.file_names[file_num] = file_name
 
                 with open(txt_dir +'/'+ subdir +'/'+ file_name) as f:
+
                     for j,line in enumerate(f):
                         self.descriptions[i] = word_tokenize(line)
-                        #self.descriptions[i] = word_tokenize(line.strip())
                         i += 1
+
                     # make sure number of descriptions is corect
                     assert j == self.desc_per_img-1
+
+                file_num += 1
 
 
