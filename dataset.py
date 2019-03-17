@@ -44,18 +44,20 @@ class Birds(Dataset):
         self.embeddings = Word2Vec(self.descriptions, size=self.encoding_dim)
 
     def _create_txt_encodings(self):
-        embedding_lists = np.empty(self.N, dtype=np.ndarray)
+        self.encodings = torch.empty(self.N, self.encoding_dim)
+        embedding_avg = np.empty(self.encoding_dim)
 
         for i,sentence in enumerate(self.descriptions):
-            embedding_lists[i] = np.empty((len(sentence),self.encoding_dim))
-            for j,word in enumerate(sentence):
+            n_words = 0
+            for word in sentence:
                 if word not in self.embeddings: continue
-                embedding_lists[i][j] = self.embeddings[word]
+                embedding_avg += self.embeddings[word]
+                n_words += 1
+            if n_words == 0:
+                print(sentence)
+            embedding_avg /= n_words
+            self.encodings[i,:] = torch.from_numpy(embedding_avg)[:]
 
-        self.encodings = torch.empty(self.N,self.encoding_dim)
-
-        for i,embeddings in enumerate(embedding_lists):
-            self.encodings[i] = np.mean(embeddings)
 
     def __len__(self): return self.N
 
@@ -117,11 +119,10 @@ class Birds(Dataset):
 
                 with open(txt_dir +'/'+ subdir +'/'+ file_name) as f:
                     for j,line in enumerate(f):
-                        self.descriptions[i] = line.strip().split()
-                        #self.descriptions[i,j] = line.strip()
+                        self.descriptions[i] = word_tokenize(line)
+                        #self.descriptions[i] = word_tokenize(line.strip())
                         i += 1
                     # make sure number of descriptions is corect
                     assert j == self.desc_per_img-1
-                #i += 1
 
 
