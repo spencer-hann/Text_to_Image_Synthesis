@@ -8,6 +8,9 @@ from PIL import Image
 from gensim.models import Word2Vec
 from nltk import word_tokenize
 from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+from glove_vec import*
+from nltk.stem import WordNetLemmatizer
 
 stopwords = set(stopwords.words('english'))
 
@@ -24,15 +27,19 @@ class Birds(Dataset):
             txt_dir=Birds_txt_dir,
             descriptions_per_image=10,
             encoding_dim=1024,
-            incl_stopwords=True):
+            incl_stopwords=True,
+            isWord2Vec = True,
+            lemmatization = False):
         if descriptions_per_image > 10:
             descriptions_per_image = 10 # we only have 10
 
         self.desc_per_img = descriptions_per_image
         self.encoding_dim = encoding_dim
         self.incl_stopwords = incl_stopwords
+        self.isWord2Vec = isWord2Vec
+        self.lemmatization = lemmatization
 
-        print(f"Loading Birds dataset in `dataset.py`: descriptions_per_img={descriptions_per_image}, encoding_dim={encoding_dim}, incl_stopwords={incl_stopwords}")
+        print(f"Loading Birds dataset in `dataset.py`: descriptions_per_img={descriptions_per_image}, encoding_dim={encoding_dim}, incl_stopwords={incl_stopwords}, isWord2Vec={isWord2Vec}, lemmatization={lemmatization}")
         print("Loading images...")
         self._load_images(img_dir)
         print("done!")
@@ -53,23 +60,39 @@ class Birds(Dataset):
         print("done!")
 
     def _train_word_embeddings(self):
-        self.embeddings = Word2Vec(self.all_descriptions, size=self.encoding_dim)
+        if self.isWord2Vec:
+            self.embeddings = Word2Vec(self.all_descriptions, size=self.encoding_dim)
+        else:
+            self.glove = Glove(self.all_descriptions, self.incl_stopwords, self.lemmatization)
+            self.glove.train()
 
     def _create_txt_encodings(self):
         self.encodings = torch.empty(self.N, self.encoding_dim)
         embedding_avg = np.empty(self.encoding_dim)
+        if self.isWord2Vec:
+            for i,sentence in enumerate(self.descriptions):
+                n_words = 0
+                for word in sentence:
+                    if not self.incl_stopwords and word in stopwords \
+                            or word not in self.embeddings:
+                        continue
+                    embedding_avg += self.embeddings[word]
+                    n_words += 1
+                embedding_avg /= n_words
+                self.encodings[i,:] = torch.from_numpy(embedding_avg)[:]
 
+        ##Using GloVE
         for i,sentence in enumerate(self.descriptions):
             n_words = 0
             for word in sentence:
+                w_embeddings = self.glove.word_vec[word]
                 if not self.incl_stopwords and word in stopwords \
-                        or word not in self.embeddings:
+                        or w_embeddings == None:
                     continue
-                embedding_avg += self.embeddings[word]
+                embedding_avg += w_embeddings
                 n_words += 1
             embedding_avg /= n_words
             self.encodings[i,:] = torch.from_numpy(embedding_avg)[:]
-
 
     def __len__(self): return self.N
 

@@ -40,6 +40,8 @@ parser.add_argument('--outf', default='./Results', help='folder to output images
 parser.add_argument('--manualSeed', type=int, help='manual seed')
 parser.add_argument('--desc_per_img', type=int, default=3)
 parser.add_argument('--incl_stopwords', type=bool, default=False)
+parser.add_argument('--isWord2Vec', type=bool, default=True)
+parser.add_argument('--lemmatization', type=bool, default=False)
 
 parser.add_argument('--cls', action='store_true', help='activates cls run')
 
@@ -73,7 +75,7 @@ if torch.cuda.is_available() and not opt.cuda:
     print("WARNING: You have a CUDA device, so you should probably run with --cuda")
 
 #dataset = TTI_Dataset()
-dataset = Birds(descriptions_per_image=opt.desc_per_img, incl_stopwords=opt.incl_stopwords)
+dataset = Birds(descriptions_per_image=opt.desc_per_img, incl_stopwords=opt.incl_stopwords, isWord2Vec=opt.isWord2Vec, lemmatization=opt.lemmatization)
 nc=3
 
 print('loaded dataset')
@@ -181,9 +183,9 @@ for epoch in range(opt.niter):
                     '%s/fake_samples_epoch_%03d.png' % (opt.outf, epoch),
                     normalize=True)
     print("saving progress to %s/loss_by_epoch_D_descperimg_%d_stopwords_%d.out" % (opt.outf, opt.desc_per_img, opt.incl_stopwords))
-    np.savetxt("%s/loss_by_epoch_D_descperimg_%d_stopwords_%d_beta1_%f_lr_%f.out" % (opt.outf, opt.desc_per_img, opt.incl_stopwords, opt.beta1, opt.lr), loss_by_epoch_D)
+    np.savetxt("%s/loss_by_epoch_D_descperimg_%d_stopwords_%d_beta1_%f_lr_%f_isWord2Vec_%d_lemmatization_%d.out" % (opt.outf, opt.desc_per_img, opt.incl_stopwords, opt.beta1, opt.lr, opt.isWord2Vec, opt.lemmatization), loss_by_epoch_D)
     print("saving progress to %s/loss_by_epoch_G_descperimg_%d_stopwords_%d.out" % (opt.outf, opt.desc_per_img, opt.incl_stopwords))
-    np.savetxt("%s/loss_by_epoch_G_descperimg_%d_stopwords_%d_beta1_%f_lr_%f.out" % (opt.outf, opt.desc_per_img, opt.incl_stopwords, opt.beta1, opt.lr), loss_by_epoch_G)
+    np.savetxt("%s/loss_by_epoch_G_descperimg_%d_stopwords_%d_beta1_%f_lr_%f_isWord2Vec_%d_lemmatization_%d.out" % (opt.outf, opt.desc_per_img, opt.incl_stopwords, opt.beta1, opt.lr, opt.isWord2Vec, opt.lemmatization), loss_by_epoch_G)
 
     print("Epoch time:", time.time() - etime)
     # do checkpointing
