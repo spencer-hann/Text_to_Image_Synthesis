@@ -8,12 +8,13 @@ import PIL
 from torchvision import transforms
 import random
 
+EMBED = 0
+IMAGE = 1
 # test to image dataset
 # data type: train, test, valid
 class TTI_Dataset(Dataset):
-    def __init__(self, data_type='train'):
-        self.image_paths = []
-        self.embeddings = []
+    def __init__(self, descriptions_per_image=1, data_type='train'):
+        self.pairs = []
         self.img_dim = 64
         cwd = os.getcwd()
         data_path = os.path.join(cwd, 'data')
@@ -35,25 +36,19 @@ class TTI_Dataset(Dataset):
             cur_dir = os.path.join(data_path, l)
             temp_files = os.listdir(cur_dir)
             for file in temp_files:
+                samp = [x for x in range(10)]
+                random.shuffle(samp)
                 temp = torchfile.load(os.path.join(cur_dir, file))
-                self.embeddings.append(temp[b'txt'])
-                # get associated image
+                txt = temp[b'txt']
                 im_file = temp[b'img'].decode('UTF8')
                 im = os.path.join(images_path, im_file)
-                self.image_paths.append(im)
-        self.validate_embeddings()
-
-    def validate_embeddings(self):
-        k = len(self.embeddings)
-        sz = self.embeddings[0].shape
-        for e in self.embeddings:
-            assert(sz == e.shape)
+                for i in samp[:descriptions_per_image]:
+                    self.pairs.append((txt[i], im))
 
     def __len__(self):
-        return len(self.embeddings)
+        return len(self.pairs)
 
     def _get_image(self, path):
-        #print(path)
         im = Image.open(path).convert('RGB')
         return self.transformations(im)
 
@@ -62,14 +57,12 @@ class TTI_Dataset(Dataset):
         takes in index for real images
         Needs to return real img, fake img, real txt, fake txt
         '''
-        r1 = random.randint(0, 9)
-        r2 = random.randint(0, 9)
-        right_image = self._get_image(self.image_paths[i])
+        right_image = self._get_image(self.pairs[i][IMAGE])
 
-        right_embed = self.embeddings[i][r1]
+        right_embed = self.pairs[i][EMBED]
         # generate 2 random nums != i
-        population = [x for x in range(len(self.embeddings)) if x != i]
+        population = [x for x in range(len(self.pairs)) if x > i + 10 or x < i - 10 ]
         r = random.sample(population, 1)
-        wrong_embed = self.embeddings[r[0]][r2]
+        wrong_embed = self.pairs[r[0]][EMBED]
 
         return (right_image, right_embed, wrong_embed)
