@@ -13,7 +13,7 @@ class Glove():
 		self.embed_size = 1024
 		self.xmax = 2
 		self.alpha = 0.075
-		self.batch_size = 500
+		self.batch_size = 200
 		self.l_rate = 0.05
 		self.num_epochs = 10
 		self.incl_stopwords = incl_stopwords
