@@ -72,8 +72,8 @@ cudnn.benchmark = True
 if torch.cuda.is_available() and not opt.cuda:
     print("WARNING: You have a CUDA device, so you should probably run with --cuda")
 
-#dataset = TTI_Dataset()
-dataset = Birds(descriptions_per_image=opt.desc_per_img, incl_stopwords=opt.incl_stopwords)
+dataset = TTI_Dataset(descriptions_per_image=opt.desc_per_img)
+#dataset = Birds(descriptions_per_image=opt.desc_per_img, incl_stopwords=opt.incl_stopwords)
 nc=3
 
 print('loaded dataset')
