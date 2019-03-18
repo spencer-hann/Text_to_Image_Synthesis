@@ -38,7 +38,7 @@ parser.add_argument('--netG', default='', help="path to netG (to continue traini
 parser.add_argument('--netD', default='', help="path to netD (to continue training)")
 parser.add_argument('--outf', default='./Results', help='folder to output images and model checkpoints')
 parser.add_argument('--manualSeed', type=int, help='manual seed')
-parser.add_argument('--desc_per_img', type=int, default=6)
+parser.add_argument('--desc_per_img', type=int, default=3)
 parser.add_argument('--incl_stopwords', type=bool, default=False)
 
 parser.add_argument('--cls', action='store_true', help='activates cls run')
@@ -183,7 +183,7 @@ for epoch in range(opt.niter):
     print("saving progress to %s/loss_by_epoch_D_descperimg_%d_stopwords_%d.out" % (opt.outf, opt.desc_per_img, opt.incl_stopwords))
     np.savetxt("%s/loss_by_epoch_D_descperimg_%d_stopwords_%d_beta1_%f_lr_%f.out" % (opt.outf, opt.desc_per_img, opt.incl_stopwords, opt.beta1, opt.lr), loss_by_epoch_D)
     print("saving progress to %s/loss_by_epoch_G_descperimg_%d_stopwords_%d.out" % (opt.outf, opt.desc_per_img, opt.incl_stopwords))
-    np.savetxt("%s/loss_by_epoch_G_descperimg_%d_stopwords_%d_beta1_%f_lr_%f.out.out" % (opt.outf, opt.desc_per_img, opt.incl_stopwords, opt.beta1, opt.lr), loss_by_epoch_G)
+    np.savetxt("%s/loss_by_epoch_G_descperimg_%d_stopwords_%d_beta1_%f_lr_%f.out" % (opt.outf, opt.desc_per_img, opt.incl_stopwords, opt.beta1, opt.lr), loss_by_epoch_G)
 
     print("Epoch time:", time.time() - etime)
     # do checkpointing
