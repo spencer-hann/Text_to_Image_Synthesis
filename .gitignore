@@ -1,5 +1,7 @@
 __pycache__/
 data/
+deeptext2img/
+playground/data/
 
 # Environments
 .env

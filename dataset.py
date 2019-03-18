@@ -29,7 +29,7 @@ class Birds(Dataset):
             descriptions_per_image = 10 # we only have 10
 
         self.desc_per_img = descriptions_per_image
-        self.encoding_dim=encoding_dim
+        self.encoding_dim = encoding_dim
         self.incl_stopwords = incl_stopwords
 
         print(f"Loading Birds dataset in `dataset.py`: descriptions_per_img={descriptions_per_image}, encoding_dim={encoding_dim}, incl_stopwords={incl_stopwords}")
@@ -152,5 +152,3 @@ class Birds(Dataset):
                             i += 1
 
                 file_num += 1
-
-
