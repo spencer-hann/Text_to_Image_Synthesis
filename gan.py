@@ -183,7 +183,7 @@ for epoch in range(opt.niter):
     print("saving progress to %s/loss_by_epoch_D_descperimg_%d_stopwords_%d.out" % (opt.outf, opt.desc_per_img, opt.incl_stopwords))
     np.savetxt("%s/loss_by_epoch_D_descperimg_%d_stopwords_%d_beta1_%f_lr_%f.out" % (opt.outf, opt.desc_per_img, opt.incl_stopwords, opt.beta1, opt.lr), loss_by_epoch_D)
     print("saving progress to %s/loss_by_epoch_G_descperimg_%d_stopwords_%d.out" % (opt.outf, opt.desc_per_img, opt.incl_stopwords))
-    np.savetxt("%s/loss_by_epoch_G_descperimg_%d_stopwords_%d_beta1_%f_lr_%f.out.out" % (opt.outf, opt.desc_per_img, opt.incl_stopwords, opt.beta1, opt.lr), loss_by_epoch_G)
+    np.savetxt("%s/loss_by_epoch_G_descperimg_%d_stopwords_%d_beta1_%f_lr_%f.out" % (opt.outf, opt.desc_per_img, opt.incl_stopwords, opt.beta1, opt.lr), loss_by_epoch_G)
 
     print("Epoch time:", time.time() - etime)
     # do checkpointing
