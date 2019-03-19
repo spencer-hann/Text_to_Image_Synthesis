@@ -38,7 +38,7 @@ parser.add_argument('--netG', default='', help="path to netG (to continue traini
 parser.add_argument('--netD', default='', help="path to netD (to continue training)")
 parser.add_argument('--outf', default='./Results', help='folder to output images and model checkpoints')
 parser.add_argument('--manualSeed', type=int, help='manual seed')
-parser.add_argument('--desc_per_img', type=int, default=3)
+parser.add_argument('--desc_per_img', type=int, default=5)
 parser.add_argument('--incl_stopwords', type=bool, default=False)
 parser.add_argument('--isWord2Vec', type=bool, default=True)
 parser.add_argument('--lemmatization', type=bool, default=False)
