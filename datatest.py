@@ -5,23 +5,24 @@ from PIL import Image
 from torchvision import transforms
 
 
-data = Birds(descriptions_per_image=2)
+
+def glove_test():
+    data = Birds(isWord2Vec=False,lemmatization=True)
+    test_num = 4300
+    test = data[test_num]
+    test = data.get_full_item(test_num)
+    print(test[1:]) #don't print image tensor
+    to_pil = transforms.ToPILImage()
+    img = to_pil(test[0])
+    #print(data.descriptions[:10])
+    img.show()
+    #plt.imshow(test[0].numpy(), cm)
 
 def simple_test():
     data = Birds(descriptions_per_image=2)
 
 
     test_num = 4300
-
-
-test = data[test_num]
-test = data.get_full_item(test_num)
-print(test[1:]) #don't print image tensor
-to_pil = transforms.ToPILImage()
-img = to_pil(test[0])
-#print(data.descriptions[:10])
-img.show()
-#plt.imshow(test[0].numpy(), cm)
 
     test = data[test_num]
     test = data.get_full_item(test_num)
@@ -32,5 +33,6 @@ img.show()
     img.show()
     #plt.imshow(test[0].numpy(), cm)
 
+
 if __name__ == "__main__":
-    simple_test()
+    glove_test()
