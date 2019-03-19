@@ -29,7 +29,7 @@ parser.add_argument('--imageSize', type=int, default=64, help='the height / widt
 parser.add_argument('--nz', type=int, default=100, help='size of the latent z vector')
 parser.add_argument('--ngf', type=int, default=64)
 parser.add_argument('--ndf', type=int, default=64)
-parser.add_argument('--niter', type=int, default=150, help='number of epochs to train for')
+parser.add_argument('--niter', type=int, default=100, help='number of epochs to train for')
 parser.add_argument('--lr', type=float, default=0.0004, help='learning rate, default=0.0004')
 parser.add_argument('--beta1', type=float, default=0.3, help='beta1 for adam. default=0.3')
 parser.add_argument('--cuda', action='store_true', help='enables cuda')
@@ -38,7 +38,7 @@ parser.add_argument('--netG', default='', help="path to netG (to continue traini
 parser.add_argument('--netD', default='', help="path to netD (to continue training)")
 parser.add_argument('--outf', default='./Results', help='folder to output images and model checkpoints')
 parser.add_argument('--manualSeed', type=int, help='manual seed')
-parser.add_argument('--desc_per_img', type=int, default=3)
+parser.add_argument('--desc_per_img', type=int, default=5)
 parser.add_argument('--incl_stopwords', type=bool, default=False)
 parser.add_argument('--isWord2Vec', type=bool, default=True)
 parser.add_argument('--lemmatization', type=bool, default=False)
@@ -75,7 +75,8 @@ if torch.cuda.is_available() and not opt.cuda:
     print("WARNING: You have a CUDA device, so you should probably run with --cuda")
 
 #dataset = TTI_Dataset()
-dataset = Birds(descriptions_per_image=opt.desc_per_img, incl_stopwords=opt.incl_stopwords, isWord2Vec=opt.isWord2Vec, lemmatization=opt.lemmatization)
+opt.isWord2Vec = False
+dataset = Birds(descriptions_per_image=opt.desc_per_img, incl_stopwords=opt.incl_stopwords, isWord2Vec = opt.isWord2Vec, lemmatization = opt.lemmatization)
 nc=3
 
 print('loaded dataset')

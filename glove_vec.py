@@ -32,6 +32,12 @@ class Glove():
 		self.w_list_size = len(self.word_list)
 		self.vocab_size = len(self.vocab)
 
+		# check for cuda
+		device = None
+		if torch.cuda.is_available():
+			device = torch.device(torch.cuda.current_device())
+		else:
+			device = torch.device("cpu")
 
 		# Create word to index mapping
 		self.w_to_i = {word: ind for ind, word in enumerate(self.vocab)}
@@ -58,6 +64,10 @@ class Glove():
 			[Variable(torch.from_numpy(np.random.normal(0, 0.01, 1)),
 				requires_grad = True) for j in range(self.vocab_size)] for i in range(2)]
 
+		self.l_embed.to(device)
+		self.r_embed.to(device)
+		self.l_biases.to(device)
+		self.r_biases.to(device)
 		# Set up optimizer
 		self.optimizer = optim.Adam(self.l_embed + self.r_embed + self.l_biases + self.r_biases, lr = self.l_rate)
 
@@ -79,6 +89,11 @@ class Glove():
 			covals.append(self.comat[ind])
 			l_v_bias.append(self.l_biases[ind[0]])
 			r_v_bias.append(self.r_biases[ind[1]])
+		l_vecs = torch.tensor(l_vecs, device=device, dtype=torch.float64)
+		r_vecs = torch.tensor(r_vecs, device=device, dtype=torch.float64)
+		covals = torch.tensor(covals, device=device, dtype=torch.float64)
+		l_v_bias = torch.tensor(l_v_bias, device=device, dtype=torch.float64)
+		r_v_bias = torch.tensor(l_v_bias, device=device, dtype=torch.float64)
 		return l_vecs, r_vecs, covals, l_v_bias, r_v_bias
 
 	def train(self):
