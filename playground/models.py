@@ -65,10 +65,11 @@ class Generator(nn.Module):
         )
 
     def forward(self, txt, z):
-        projected_embed = self.projection(txt).unsqueeze(2).unsqueeze(3)
+        print(txt.dim())
+        print(z.dim())
+        projected_embed = self.projection(txt)
         input = torch.cat([projected_embed, z], 1)
         output = self.main(input)
-
         return output
 
 class Discriminator(nn.Module):
