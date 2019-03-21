@@ -84,7 +84,7 @@ class Birds(Dataset):
         ##Using GloVE
         for i,sentence in enumerate(self.descriptions):
             n_words = 0
-            embedding_avg = np.zero(self.encoding_dim)
+            embedding_avg[:] = 0
             for word in sentence:
                 w_embeddings = self.glove.word_vec(word)
                 if not self.incl_stopwords and word in stopwords \
