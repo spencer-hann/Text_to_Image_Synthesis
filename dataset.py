@@ -85,7 +85,7 @@ class Birds(Dataset):
         for i,sentence in enumerate(self.descriptions):
             n_words = 0
             for word in sentence:
-                w_embeddings = self.glove.word_vec[word]
+                w_embeddings = self.glove.word_vec(word)
                 if not self.incl_stopwords and word in stopwords \
                         or w_embeddings == None:
                     continue

@@ -55,21 +55,22 @@ class Generator(nn.Module):
             nn.BatchNorm2d(self.ngf * 2),
             nn.ReLU(True),
             # state size. (ngf*2) x 16 x 16
-            nn.ConvTranspose2d(self.ngf * 2,     self.ngf, 4, 2, 1, bias=False),
+            nn.ConvTranspose2d(self.ngf * 2, self.ngf, 4, 2, 1, bias=False),
             nn.BatchNorm2d(self.ngf),
             nn.ReLU(True),
             # state size. (ngf) x 32 x 32
-            nn.ConvTranspose2d(    self.ngf,      self.nc, 4, 2, 1, bias=False),
+            nn.ConvTranspose2d(self.ngf, self.nc, 4, 2, 1, bias=False),
             nn.Tanh()
             # state size. (nc) x 64 x 64
         )
 
     def forward(self, txt, z):
-        print(txt.dim())
-        print(z.dim())
-        projected_embed = self.projection(txt)
+        projected_embed = self.projection(txt).unsqueeze(1).unsqueeze(2).unsqueeze(3)
+        print(projected_embed.shape, z.dim())
         input = torch.cat([projected_embed, z], 1)
+        print("hell")
         output = self.main(input)
+
         return output
 
 class Discriminator(nn.Module):

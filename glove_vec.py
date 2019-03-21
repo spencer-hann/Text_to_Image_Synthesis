@@ -13,9 +13,9 @@ class Glove():
 		self.embed_size = 1024
 		self.xmax = 2
 		self.alpha = 0.075
-		self.batch_size = 200
+		self.batch_size = 30000
 		self.l_rate = 0.05
-		self.num_epochs = 10
+		self.num_epochs = 2
 		self.incl_stopwords = incl_stopwords
 		self.lemmatization = lemmatization
 		self.word_list = []
@@ -97,7 +97,7 @@ class Glove():
 				avg_loss += loss.data[0]/num_batches
 				loss.backward()
 				self.optimizer.step()
-			print("Average loss for epoch "+str(epoch+1)+": ", avg_loss)
+			print("Average loss for epoch "+str(epoch+1)+": ", avg_loss.item())
 
 	def word_vec(self,word):
 		if word not in self.w_to_i:
