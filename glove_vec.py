@@ -101,5 +101,5 @@ class Glove():
 
 	def word_vec(self,word):
 		if word not in self.w_to_i:
-			return None
+			return []
 		return (self.l_embed[self.w_to_i[word]].data + self.r_embed[self.w_to_i[word]].data).cpu().numpy()

@@ -88,7 +88,7 @@ class Birds(Dataset):
             for word in sentence:
                 w_embeddings = self.glove.word_vec(word)
                 if not self.incl_stopwords and word in stopwords \
-                        or w_embeddings == None:
+                        or not w_embeddings:
                     continue
                 embedding_avg += w_embeddings
                 n_words += 1
