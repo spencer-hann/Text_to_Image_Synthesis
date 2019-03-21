@@ -68,7 +68,7 @@ class Birds(Dataset):
 
     def _create_txt_encodings(self):
         self.encodings = torch.empty(self.N, self.encoding_dim)
-        embedding_avg = np.zero(self.encoding_dim)
+        embedding_avg = np.zeros(self.encoding_dim)
         if self.isWord2Vec:
             for i,sentence in enumerate(self.descriptions):
                 n_words = 0
