@@ -68,7 +68,7 @@ class Birds(Dataset):
 
     def _create_txt_encodings(self):
         self.encodings = torch.empty(self.N, self.encoding_dim)
-        embedding_avg = np.empty(self.encoding_dim)
+        embedding_avg = np.zero(self.encoding_dim)
         if self.isWord2Vec:
             for i,sentence in enumerate(self.descriptions):
                 n_words = 0
@@ -84,6 +84,7 @@ class Birds(Dataset):
         ##Using GloVE
         for i,sentence in enumerate(self.descriptions):
             n_words = 0
+            embedding_avg = np.zero(self.encoding_dim)
             for word in sentence:
                 w_embeddings = self.glove.word_vec(word)
                 if not self.incl_stopwords and word in stopwords \
