@@ -65,7 +65,7 @@ class Generator(nn.Module):
         )
 
     def forward(self, txt, z):
-        projected_embed = self.projection(txt).unsqueeze(1).unsqueeze(2).unsqueeze(3)
+        projected_embed = self.projection(txt).unsqueeze(2).unsqueeze(3)
         print(projected_embed.shape, z.dim())
         input = torch.cat([projected_embed, z], 1)
         print("hell")
