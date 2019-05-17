@@ -2,12 +2,15 @@
 
 Using NLP feature extraction, and Generative Adversarial Networks to generate images from text descriptions.  
 
-Partial replication of the paper [Generative Adversarial Text to Image Synthesis](https://arxiv.org/pdf/1605.05396.pdf).  
-Authors: [Scott Reed](https://github.com/reedscot), Zeynep Akata, Xinchen Yan, Lajanugen Logeswaran, Bernt Schiele, Honglak Lee  
+Partial replication of the papers  
+[Generative Adversarial Text to Image Synthesis](https://arxiv.org/pdf/1605.05396.pdf)  
+Authors: [Scott Reed](https://github.com/reedscot/icml2016), Zeynep Akata, Xinchen Yan, Lajanugen Logeswaran, Bernt Schiele, Honglak Lee  
+[Learning Deep Representations of Fine-Grained Visual Descriptions](https://arxiv.org/pdf/1605.05395.pdf)  
+Authors: [Scott Reed](https://github.com/reedscot/cvpr2016), Zeynep Akata, Honglak Lee, Bernt Schiele
 
 ## Presentation
 
-For more information this project, read our [presentation](https://github.com/spencer-hann/Text_to_Image_Synthesis/README.pdf).
+For more information this project, read our [presentation](https://github.com/spencer-hann/Text_to_Image_Synthesis/blob/master/README.pdf).
 
 ## Example output
 
