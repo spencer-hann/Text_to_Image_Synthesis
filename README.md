@@ -12,7 +12,6 @@ For more information this project, read our [presentation](https://github.com/sp
 ## Example output
 
 ![](https://github.com/spencer-hann/Text_to_Image_Synthesis/blob/master/exp3/fake_samples_epoch_598.png)
-![](https://github.com/spencer-hann/Text_to_Image_Synthesis/blob/master/exp3/fake_samples_epoch_599.png)
 
 ## Data sets used
 
